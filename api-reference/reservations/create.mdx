@@ -1,0 +1,84 @@
+---
+title: "Create a New Cinema Reservation – Backend API Guide"
+sidebarTitle: "Create Reservation"
+description: "Create a new cinema reservation by supplying a customer name, an existing ticket UUID, and a date. The server auto-generates a UUID for the new record."
+---
+
+The **Create Reservation** endpoint accepts a JSON body with the customer's name, a valid ticket UUID, and a date, then appends a new reservation to the store. The `id` field is generated automatically on the server using `uuidv4()` — you must not include it in the request body. All three body fields are required; if any is missing the server returns HTTP **400** with a descriptive message.
+
+## Endpoint
+
+```
+POST /reservaciones/create
+```
+
+## Request Body
+
+<ParamField body="cliente" type="string" required>
+  Full name of the customer making the reservation (e.g. `"María González"`).
+</ParamField>
+
+<ParamField body="ticketId" type="string" required>
+  UUID of an existing ticket to associate with this reservation (e.g. `"f9e8d7c6-b5a4-3210-fedc-ba9876543210"`).
+</ParamField>
+
+<ParamField body="fecha" type="string" required>
+  The reservation date as an ISO-formatted date string (e.g. `"2025-07-20"`).
+</ParamField>
+
+## Request
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:3000/reservaciones/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cliente": "María González",
+    "ticketId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "fecha": "2025-07-20"
+  }'
+```
+
+## Responses
+
+### 201 — Reservation Created
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "cliente": "María González",
+    "ticketId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "fecha": "2025-07-20"
+  },
+  "message": "Reservación agregada exitosamente"
+}
+```
+
+### 400 — Missing Required Fields
+
+Returned when `cliente`, `ticketId`, or `fecha` is absent from the request body.
+
+```json
+{
+  "data": null,
+  "message": "Faltan datos indispensables de la reservación"
+}
+```
+
+## Response Fields
+
+| Field     | Type             | Description                                        |
+|-----------|------------------|----------------------------------------------------|
+| `data`    | `object \| null` | The newly created reservation, or `null` on error  |
+| `message` | `string`         | Human-readable status message                      |
+
+### Created Reservation Object
+
+| Field      | Type     | Description                                         |
+|------------|----------|-----------------------------------------------------|
+| `id`       | `string` | Server-generated UUID for the new reservation       |
+| `cliente`  | `string` | Customer name as provided                           |
+| `ticketId` | `string` | UUID of the associated ticket as provided           |
+| `fecha`    | `string` | Reservation date as provided (e.g. `"2025-07-20"`) |

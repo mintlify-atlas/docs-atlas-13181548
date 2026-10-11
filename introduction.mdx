@@ -1,0 +1,60 @@
+---
+title: "Cinema Backend API: An In-Memory REST API Overview"
+sidebarTitle: "Introduction"
+description: "Discover the Cinema Backend API: a zero-auth, in-memory Express.js service for managing movies, screening rooms, functions, tickets, and reservations."
+---
+
+The Cinema Backend API is a RESTful service built with Express.js that provides a complete backend for cinema operations. It lets you programmatically manage the full lifecycle of a cinema: catalogue movies, configure screening rooms, schedule show functions, issue tickets for specific seats, and record customer reservations — all through a consistent JSON interface without any authentication overhead.
+
+Every resource returns the same `{ data, message }` envelope, every record is identified by a server-generated UUID v4, and the entire data store lives in memory — making the API ideal for rapid prototyping and learning without the need for a database.
+
+## Core Resources
+
+The API is organised around five entities that map directly to real-world cinema concepts:
+
+| Resource | Spanish name | Base path | Purpose |
+|---|---|---|---|
+| Movie | Película | `/peliculas` | Films available for scheduling |
+| Screening Room | Sala | `/salas` | Physical rooms with a fixed seat capacity |
+| Show Function | Función | `/funciones` | A specific movie scheduled in a specific room at a given time |
+| Ticket | Ticket | `/tickets` | A seat assignment for a given function, with a price |
+| Reservation | Reservación | `/reservaciones` | A named customer booking linked to a ticket |
+
+## Key Characteristics
+
+- **In-memory store** — all data is held in JavaScript arrays that are initialised empty on startup. No database is required, and all data is lost when the server restarts.
+- **No authentication** — every endpoint is publicly accessible; there are no API keys, sessions, or tokens.
+- **Consistent response envelope** — every response, success or error, wraps its payload in `{ "data": ..., "message": "..." }`.
+- **UUID-based IDs** — the server generates a UUID v4 for every new record. Clients must never send an `id` field on create requests.
+
+## Explore the Docs
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Clone the repo, install dependencies, and make your first API call in under five minutes.
+  </Card>
+  <Card title="Data Model" icon="database" href="/concepts/data-model">
+    Field-by-field reference for every entity and how they relate to each other.
+  </Card>
+  <Card title="Response Format" icon="brackets-curly" href="/concepts/response-format">
+    Understand the universal JSON envelope, HTTP status codes, and error shapes.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    Complete endpoint listing with request/response examples for all five resources.
+  </Card>
+</CardGroup>
+
+## Tech Stack
+
+The Cinema Backend API is a lightweight Node.js application with no external runtime dependencies beyond Express:
+
+| Layer | Technology | Notes |
+|---|---|---|
+| Runtime | Node.js (ESM modules) | `"type": "module"` in `package.json` — use `import`/`export` throughout |
+| Framework | Express 4 | Routing, JSON body parsing, `express.urlencoded` |
+| ID generation | uuid v4 | Every new record receives a `uuidv4()` identifier |
+| HTTP logging | Morgan (`dev` format) | Logs method, path, status, and response time to stdout |
+| View engine | EJS / Jade | Bundled for the default Express scaffold; not used by the JSON API routes |
+| Dev server | nodemon | `npm run dev` restarts the process on file changes |
+
+The server reads its port from the `PORT` environment variable, falling back to **3000** if the variable is not set.

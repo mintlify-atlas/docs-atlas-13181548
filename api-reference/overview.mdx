@@ -1,0 +1,80 @@
+---
+title: "Cinema Backend API Reference"
+sidebarTitle: "Overview"
+description: "Complete reference for the Cinema Backend REST API — endpoints for movies, screening rooms, show functions, tickets, and reservations."
+---
+
+This reference documents every HTTP endpoint exposed by the Cinema Backend API. It covers all five resources — movies, screening rooms, show functions, tickets, and reservations — along with the conventions used across the API: the base URL, response envelope format, and the HTTP status codes you can expect. Use this reference alongside the [quickstart](/quickstart) to go from zero to a working integration quickly.
+
+## Base URL
+
+All endpoints are relative to the following base URL:
+
+```
+http://localhost:3000
+```
+
+The port is configurable via the `PORT` environment variable. If `PORT` is set in your environment the server will bind to that port instead of `3000`.
+
+## Authentication
+
+This API requires **no authentication**. Every endpoint is open — no API keys, tokens, or credentials are needed to make requests.
+
+## Response Format
+
+Every endpoint returns JSON using a consistent envelope structure:
+
+```json
+{
+  "data": ...,
+  "message": "..."
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data` | any | The primary payload — an object, array, or `null` |
+| `message` | string | A human-readable summary of the operation result |
+
+## HTTP Status Codes
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Success — returned for reads, lists, and deletes |
+| `201` | Created or updated — returned when a resource is created or modified |
+| `400` | Bad request — missing required fields, or resource not found during a mutation |
+| `404` | Not found — the requested resource does not exist (GET operations) |
+
+## Resources
+
+The API exposes five core resources:
+
+| Resource | Base Path | Description |
+|----------|-----------|-------------|
+| Movies | `/peliculas` | Films in the catalog |
+| Screening Rooms | `/salas` | Physical rooms with seating capacity |
+| Show Functions | `/funciones` | A movie scheduled in a room at a given time |
+| Tickets | `/tickets` | A seat in a function with an associated price |
+| Reservations | `/reservaciones` | A customer booking that links to a ticket |
+
+<CardGroup cols={2}>
+  <Card title="Movies" icon="film" href="/api-reference/movies/list">
+    Browse and manage films in the catalog.
+  </Card>
+  <Card title="Screening Rooms" icon="door-open" href="/api-reference/rooms/list">
+    Manage physical rooms and their seating capacity.
+  </Card>
+  <Card title="Show Functions" icon="calendar" href="/api-reference/functions/list">
+    Schedule movies in rooms at specific times.
+  </Card>
+  <Card title="Tickets" icon="ticket" href="/api-reference/tickets/list">
+    Assign seats and prices within a function.
+  </Card>
+  <Card title="Reservations" icon="bookmark" href="/api-reference/reservations/list">
+    Create and manage customer seat bookings.
+  </Card>
+</CardGroup>
+
+<Note>
+  The Cinema Backend API uses an **in-memory data store**. All data is held in server memory and does not persist between restarts. Every time the server starts it begins with an empty state.
+</Note>

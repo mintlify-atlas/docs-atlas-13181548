@@ -1,0 +1,103 @@
+---
+title: "Delete a Movie by ID — Cinema Backend API"
+sidebarTitle: "Delete Movie"
+description: "Remove a movie from the Cinema Backend API in-memory store by UUID. On success, returns the full updated movies array. Returns 400 if the ID is not found."
+---
+
+The **Delete Movie** endpoint removes a movie from the in-memory store using its UUID. On success the server responds with the **full updated array** of remaining movies (which may be empty), making it straightforward to keep a client-side list in sync without needing a follow-up List request. If the supplied `id` does not match any stored movie, the server returns `400 Bad Request`.
+
+<Note>
+  Deletion is **permanent within the current server session**. Because the store is held in memory, a server restart also clears all data. There is no soft-delete or recycle bin mechanism.
+</Note>
+
+## Endpoint
+
+```
+DELETE /peliculas/delete/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the movie to delete (e.g. `550e8400-e29b-41d4-a716-446655440000`).
+</ParamField>
+
+## Response Fields
+
+<ResponseField name="data" type="array | null">
+  The complete, updated array of remaining movies after deletion on success, or `null` when the ID was not found.
+
+  <Expandable title="Movie object (array item)">
+    <ResponseField name="id" type="string (uuid)">
+      The unique identifier of the movie.
+    </ResponseField>
+    <ResponseField name="titulo" type="string">
+      The title of the movie.
+    </ResponseField>
+    <ResponseField name="genero" type="string">
+      The genre of the movie.
+    </ResponseField>
+    <ResponseField name="duracion" type="number">
+      Runtime of the movie in **minutes**.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable description of the operation result.
+  - `"Película eliminada exitosamente"` — movie removed, updated array returned.
+  - `"Película no encontrada"` — no movie matches the given ID.
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X DELETE http://localhost:3000/peliculas/delete/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Accept: application/json"
+```
+
+## Example Responses
+
+**200 — Movie deleted** *(returns the remaining movies array)*
+
+```json
+{
+  "data": [
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "titulo": "El Padrino",
+      "genero": "Drama",
+      "duracion": 175
+    },
+    {
+      "id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+      "titulo": "Interstellar",
+      "genero": "Ciencia Ficción",
+      "duracion": 169
+    }
+  ],
+  "message": "Película eliminada exitosamente"
+}
+```
+
+**200 — Movie deleted** *(store is now empty)*
+
+```json
+{
+  "data": [],
+  "message": "Película eliminada exitosamente"
+}
+```
+
+**400 — Movie not found**
+
+```json
+{
+  "data": null,
+  "message": "Película no encontrada"
+}
+```
+
+<Warning>
+  Unlike the Get endpoint — which returns `404` for a missing ID — the Delete endpoint returns **`400`** when the movie is not found. This is consistent with the Update endpoint's behaviour. Verify you are checking for `400`, not `404`, in your error-handling logic.
+</Warning>

@@ -1,72 +1,100 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Cinema Backend API",
+  "theme": "luma",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
-  },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "pages": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "primary": "#E63946",
+    "light": "#FF6B6B",
+    "dark": "#C1121F"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:support@mintlify.com"
-      }
-    ],
     "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "type": "github",
+      "href": "https://github.com/Juanfc1103/backend2026c-1.1"
     }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
-    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/Juanfc1103/backend2026c-1.1"
     }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Concepts",
+            "pages": ["concepts/data-model", "concepts/response-format"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["api-reference/overview"]
+          },
+          {
+            "group": "Movies",
+            "pages": [
+              "api-reference/movies/list",
+              "api-reference/movies/get",
+              "api-reference/movies/latest",
+              "api-reference/movies/create",
+              "api-reference/movies/update",
+              "api-reference/movies/delete"
+            ]
+          },
+          {
+            "group": "Screening Rooms",
+            "pages": [
+              "api-reference/rooms/list",
+              "api-reference/rooms/get",
+              "api-reference/rooms/create",
+              "api-reference/rooms/update",
+              "api-reference/rooms/delete"
+            ]
+          },
+          {
+            "group": "Show Functions",
+            "pages": [
+              "api-reference/functions/list",
+              "api-reference/functions/get",
+              "api-reference/functions/create",
+              "api-reference/functions/update",
+              "api-reference/functions/delete"
+            ]
+          },
+          {
+            "group": "Tickets",
+            "pages": [
+              "api-reference/tickets/list",
+              "api-reference/tickets/get",
+              "api-reference/tickets/create",
+              "api-reference/tickets/update",
+              "api-reference/tickets/delete"
+            ]
+          },
+          {
+            "group": "Reservations",
+            "pages": [
+              "api-reference/reservations/list",
+              "api-reference/reservations/get",
+              "api-reference/reservations/by-date-range",
+              "api-reference/reservations/create",
+              "api-reference/reservations/update",
+              "api-reference/reservations/delete",
+              "api-reference/reservations/unlink-ticket"
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

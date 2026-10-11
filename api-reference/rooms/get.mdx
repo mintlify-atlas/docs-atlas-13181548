@@ -1,0 +1,65 @@
+---
+title: "Get a Screening Room by ID – Cinema Backend API"
+sidebarTitle: "Get Room"
+description: "Fetch a single screening room using its UUID. Returns the room object on success, or a 404 error when no matching room is found in the store."
+---
+
+The **Get Room** endpoint looks up a single screening room by its unique identifier. Supply the room's UUID as a path parameter and the API returns the full room object if a match is found. If no room with that ID exists, the server responds with HTTP `404` and sets `data` to `null`, allowing you to distinguish a missing resource from any other kind of error.
+
+## Endpoint
+
+```
+GET /salas/:id
+```
+
+## Path Parameters
+
+| Parameter | Type     | Required | Description                          |
+| --------- | -------- | -------- | ------------------------------------ |
+| `id`      | `string` | ✅ Yes   | UUID of the screening room to fetch  |
+
+## Response Schema
+
+| Field     | Type            | Description                               |
+| --------- | --------------- | ----------------------------------------- |
+| `data`    | `object \| null` | Room object on success, `null` on failure |
+| `message` | `string`        | Human-readable status description         |
+
+### Room Object
+
+| Field       | Type     | Description                         |
+| ----------- | -------- | ----------------------------------- |
+| `id`        | `string` | UUID of the screening room          |
+| `nombre`    | `string` | Display name of the screening room  |
+| `capacidad` | `number` | Maximum seat count for the room     |
+
+## Examples
+
+### Request
+
+```bash
+curl --request GET \
+  --url http://localhost:3000/salas/a3bb189e-8bf9-3888-9912-ace4e6543002
+```
+
+### Response — room found `200`
+
+```json
+{
+  "data": {
+    "id": "a3bb189e-8bf9-3888-9912-ace4e6543002",
+    "nombre": "Sala Norte",
+    "capacidad": 120
+  },
+  "message": "Sala encontrada exitosamente"
+}
+```
+
+### Response — room not found `404`
+
+```json
+{
+  "data": null,
+  "message": "Sala no encontrada"
+}
+```

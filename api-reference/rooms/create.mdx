@@ -1,0 +1,80 @@
+---
+title: "Create a New Screening Room – Cinema Backend API"
+sidebarTitle: "Create Room"
+description: "Add a new screening room by providing a name and seating capacity. The server auto-generates a UUID and returns the full room object on success."
+---
+
+The **Create Room** endpoint adds a new screening room to the in-memory store. You supply the room's name and seating capacity in the JSON request body; the server automatically generates a unique UUID (`id`) and attaches it to the record before persisting it. On success the full room object — including the generated `id` — is returned with HTTP `201`. If either required field is missing or the body is absent entirely, the server returns `400` without creating any record.
+
+## Endpoint
+
+```
+POST /salas/create
+```
+
+## Request Body
+
+Send a JSON object with the following fields:
+
+<ParamField body="nombre" type="string" required>
+  Display name of the screening room (e.g. `"Sala Norte"`).
+</ParamField>
+
+<ParamField body="capacidad" type="number" required>
+  Maximum number of seats in the room (e.g. `120`).
+</ParamField>
+
+## Response Schema
+
+| Field     | Type            | Description                                    |
+| --------- | --------------- | ---------------------------------------------- |
+| `data`    | `object \| null` | Created room object on success, `null` on error |
+| `message` | `string`        | Human-readable status description               |
+
+### Room Object (success)
+
+| Field       | Type     | Description                              |
+| ----------- | -------- | ---------------------------------------- |
+| `id`        | `string` | Server-generated UUID for the new room   |
+| `nombre`    | `string` | Display name supplied in the request     |
+| `capacidad` | `number` | Seat count supplied in the request       |
+
+## Examples
+
+### Request
+
+```bash
+curl --request POST \
+  --url http://localhost:3000/salas/create \
+  --header "Content-Type: application/json" \
+  --data '{
+    "nombre": "Sala Norte",
+    "capacidad": 120
+  }'
+```
+
+### Response — room created `201`
+
+```json
+{
+  "data": {
+    "id": "a3bb189e-8bf9-3888-9912-ace4e6543002",
+    "nombre": "Sala Norte",
+    "capacidad": 120
+  },
+  "message": "Sala agregada exitosamente"
+}
+```
+
+### Response — missing required fields `400`
+
+```json
+{
+  "data": null,
+  "message": "Faltan datos indispensables de la sala"
+}
+```
+
+<Note>
+  The `id` field is **server-generated** via `uuidv4()`. Do not include an `id` in your request body — it will be ignored and overwritten by the server-assigned value.
+</Note>

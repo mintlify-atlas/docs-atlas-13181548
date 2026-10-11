@@ -1,0 +1,98 @@
+---
+title: "Create a New Ticket – Cinema Backend API"
+sidebarTitle: "Create Ticket"
+description: "Create a ticket by supplying a show-function ID, seat identifier, and price. The server generates a UUID and returns the full ticket object on success."
+---
+
+The **Create Ticket** endpoint adds a new ticket to the store. You must provide the ID of the associated show function (`funcionId`), the seat identifier (`asiento`), and the ticket price (`precio`). The server automatically assigns a UUID to the new ticket — do not include an `id` field in the request body. If any required field is missing the request is rejected with HTTP `400` and no ticket is created.
+
+## Endpoint
+
+```
+POST /tickets/create
+```
+
+## Request Body
+
+<ParamField body="funcionId" type="string" required>
+  UUID of the show function (screening) this ticket belongs to. The referenced
+  function must already exist in the system.
+</ParamField>
+
+<ParamField body="asiento" type="string" required>
+  Seat identifier for this ticket. Use the venue's row-and-number format (e.g.
+  `"B3"`, `"A12"`, `"VIP-1"`). Must be unique per function to avoid double
+  booking.
+</ParamField>
+
+<ParamField body="precio" type="number" required>
+  Price charged for this ticket in the local currency unit (e.g. `12.50`).
+  Must be a positive number.
+</ParamField>
+
+## Responses
+
+| Status | Condition                              |
+| ------ | -------------------------------------- |
+| `201`  | Ticket created successfully            |
+| `400`  | One or more required fields are missing |
+
+### 201 — Ticket created
+
+```json
+{
+  "data": {
+    "id": "c3d4e5f6-a7b8-9012-cdef-012345678902",
+    "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "asiento": "B3",
+    "precio": 12.50
+  },
+  "message": "Ticket agregado exitosamente"
+}
+```
+
+### 400 — Missing required fields
+
+```json
+{
+  "data": null,
+  "message": "Faltan datos indispensables del ticket"
+}
+```
+
+## Example
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url http://localhost:3000/tickets/create \
+  --header "Content-Type: application/json" \
+  --data '{
+    "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "asiento": "B3",
+    "precio": 12.50
+  }'
+```
+
+```js JavaScript (fetch)
+const response = await fetch("http://localhost:3000/tickets/create", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    funcionId: "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    asiento: "B3",
+    precio: 12.50,
+  }),
+});
+
+const body = await response.json();
+
+if (response.status === 400) {
+  console.error("Validation error:", body.message);
+} else {
+  console.log("Created ticket:", body.data);
+}
+```
+
+</CodeGroup>

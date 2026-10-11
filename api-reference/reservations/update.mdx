@@ -1,0 +1,89 @@
+---
+title: "Update an Existing Reservation – Cinema Backend API"
+sidebarTitle: "Update Reservation"
+description: "Partially update a reservation by its UUID. Supply only the fields you want to change — cliente, ticketId, and fecha are all optional in the request body."
+---
+
+The **Update Reservation** endpoint performs a partial update on an existing reservation. You supply the reservation's UUID as a path parameter and include only the fields you wish to change in the JSON body. Any field omitted from the body retains its current value — the controller checks each field individually and falls back to the stored value when it is not present in the request. If no reservation matches the given ID the server responds with HTTP **400**.
+
+## Endpoint
+
+```
+PUT /reservaciones/update/:id
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  UUID of the reservation to update (e.g. `a1b2c3d4-e5f6-7890-abcd-ef1234567890`).
+</ParamField>
+
+## Request Body
+
+All body fields are optional. Provide only the fields you want to change.
+
+<ParamField body="cliente" type="string">
+  Updated customer name (e.g. `"Ana Torres"`).
+</ParamField>
+
+<ParamField body="ticketId" type="string">
+  Updated ticket UUID to associate with this reservation.
+</ParamField>
+
+<ParamField body="fecha" type="string">
+  Updated reservation date as an ISO date string (e.g. `"2025-08-05"`).
+</ParamField>
+
+## Request
+
+### Example Request
+
+```bash
+curl -X PUT http://localhost:3000/reservaciones/update/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cliente": "Ana Torres",
+    "fecha": "2025-08-05"
+  }'
+```
+
+## Responses
+
+### 201 — Reservation Updated
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "cliente": "Ana Torres",
+    "ticketId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "fecha": "2025-08-05"
+  },
+  "message": "Reservación actualizada exitosamente"
+}
+```
+
+### 400 — Reservation Not Found
+
+```json
+{
+  "data": null,
+  "message": "Reservación no encontrada"
+}
+```
+
+## Response Fields
+
+| Field     | Type             | Description                                          |
+|-----------|------------------|------------------------------------------------------|
+| `data`    | `object \| null` | The updated reservation object, or `null` on failure |
+| `message` | `string`         | Human-readable status message                        |
+
+### Updated Reservation Object
+
+| Field      | Type     | Description                              |
+|------------|----------|------------------------------------------|
+| `id`       | `string` | UUID of the reservation (unchanged)      |
+| `cliente`  | `string` | Customer name after update               |
+| `ticketId` | `string` | Associated ticket UUID after update      |
+| `fecha`    | `string` | Reservation date after update            |

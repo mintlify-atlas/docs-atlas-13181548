@@ -1,0 +1,65 @@
+---
+title: "Delete a Screening Room by ID – Cinema Backend API"
+sidebarTitle: "Delete Room"
+description: "Permanently remove a screening room from the store by UUID. Returns the full updated rooms array after deletion, or 400 if the room does not exist."
+---
+
+The **Delete Room** endpoint permanently removes a screening room from the in-memory store. Provide the room's UUID as a path parameter; if a matching record is found it is spliced out of the store immediately. On success the server responds with HTTP `200` and returns the complete, post-deletion rooms array in `data` — giving you a fresh snapshot of all remaining rooms in a single round trip. If no room with the given ID exists, the server returns `400` with `data` set to `null` and nothing is modified.
+
+## Endpoint
+
+```
+DELETE /salas/delete/:id
+```
+
+## Path Parameters
+
+| Parameter | Type     | Required | Description                           |
+| --------- | -------- | -------- | ------------------------------------- |
+| `id`      | `string` | ✅ Yes   | UUID of the screening room to delete  |
+
+## Response Schema
+
+| Field     | Type            | Description                                                  |
+| --------- | --------------- | ------------------------------------------------------------ |
+| `data`    | `array \| null` | Remaining rooms array after deletion, or `null` on failure   |
+| `message` | `string`        | Human-readable status description                            |
+
+## Examples
+
+### Request
+
+```bash
+curl --request DELETE \
+  --url http://localhost:3000/salas/delete/a3bb189e-8bf9-3888-9912-ace4e6543002
+```
+
+### Response — room deleted `200`
+
+The deleted room is removed and the remaining rooms are returned:
+
+```json
+{
+  "data": [
+    {
+      "id": "b7cd290f-9cg0-4999-0023-bdf5f7654113",
+      "nombre": "Sala Sur",
+      "capacidad": 80
+    }
+  ],
+  "message": "Sala eliminada exitosamente"
+}
+```
+
+### Response — room not found `400`
+
+```json
+{
+  "data": null,
+  "message": "Sala no encontrada"
+}
+```
+
+<Note>
+  Because room data is stored **in memory**, a successful deletion is permanent for the lifetime of the current server process but does not survive a restart. After a restart all previously seeded or created rooms will reappear (or disappear entirely, depending on your seed data), so do not rely on deletion as a durable operation in a production environment.
+</Note>

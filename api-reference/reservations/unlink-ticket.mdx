@@ -1,0 +1,73 @@
+---
+title: "Unlink Ticket from Reservation – Cinema Backend API"
+sidebarTitle: "Unlink Ticket"
+description: "Remove the ticketId association from a reservation without deleting the record. Useful for reassigning or releasing a ticket from an existing booking."
+---
+
+The **Unlink Ticket** endpoint removes the `ticketId` property from an existing reservation record using JavaScript's `delete` operator — the reservation itself remains intact in the store. This is useful when a ticket needs to be reassigned to a different reservation or simply released back to the ticket pool without losing the underlying booking record. If the reservation UUID cannot be found, the server responds with HTTP **404**.
+
+<Note>
+  Use this endpoint when you need to reassign or release a ticket without discarding the reservation. After calling this endpoint the reservation will still exist and be retrievable, but its `ticketId` field will no longer be present. You can later associate a new ticket by calling the [Update Reservation](/api-reference/reservations/update) endpoint with a fresh `ticketId`.
+</Note>
+
+## Endpoint
+
+```
+DELETE /reservaciones/delete-relation/:id/ticket
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  UUID of the reservation whose ticket association should be removed (e.g. `a1b2c3d4-e5f6-7890-abcd-ef1234567890`).
+</ParamField>
+
+## Request
+
+### Example Request
+
+```bash
+curl -X DELETE http://localhost:3000/reservaciones/delete-relation/a1b2c3d4-e5f6-7890-abcd-ef1234567890/ticket
+```
+
+## Responses
+
+### 200 — Ticket Unlinked
+
+The reservation record is returned with `ticketId` absent from the object.
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "cliente": "María González",
+    "fecha": "2025-07-20"
+  },
+  "message": "Relación con el ticket eliminada exitosamente"
+}
+```
+
+### 404 — Reservation Not Found
+
+```json
+{
+  "data": null,
+  "message": "Reservación no encontrada"
+}
+```
+
+## Response Fields
+
+| Field     | Type             | Description                                                               |
+|-----------|------------------|---------------------------------------------------------------------------|
+| `data`    | `object \| null` | The updated reservation object (without `ticketId`), or `null` if not found |
+| `message` | `string`         | Human-readable status message                                             |
+
+### Updated Reservation Object
+
+| Field     | Type     | Description                                               |
+|-----------|----------|-----------------------------------------------------------|
+| `id`      | `string` | UUID of the reservation (unchanged)                       |
+| `cliente` | `string` | Customer name (unchanged)                                 |
+| `fecha`   | `string` | Reservation date (unchanged)                              |
+| `ticketId`| —        | **Not present** — removed by this operation               |

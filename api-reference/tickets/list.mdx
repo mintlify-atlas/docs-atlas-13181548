@@ -1,0 +1,78 @@
+---
+title: "List All Tickets – Cinema Backend API"
+sidebarTitle: "List Tickets"
+description: "Retrieve every ticket stored in the Cinema Backend. Returns an array of ticket objects, or null data with a message when no tickets exist."
+---
+
+The **List Tickets** endpoint returns all tickets currently stored in the system. When at least one ticket exists the `data` field contains a full array of ticket objects. If the store is empty the server still responds with HTTP `200`, but `data` will be `null` and `message` will indicate that no tickets have been registered yet.
+
+## Endpoint
+
+```
+GET /tickets
+```
+
+## Request
+
+No path parameters, query parameters, or request body are required for this endpoint.
+
+<ParamField header="Content-Type" type="string">
+  Not required for GET requests, but `application/json` is recommended for
+  consistency with other endpoints.
+</ParamField>
+
+## Responses
+
+| Status | Condition              |
+| ------ | ---------------------- |
+| `200`  | Always returned        |
+
+### 200 — Tickets found
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+      "asiento": "A1",
+      "precio": 10.00
+    },
+    {
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+      "asiento": "A2",
+      "precio": 10.00
+    }
+  ],
+  "message": "Tickets listados exitosamente"
+}
+```
+
+### 200 — No tickets registered
+
+```json
+{
+  "data": null,
+  "message": "No hay tickets registrados"
+}
+```
+
+## Example
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url http://localhost:3000/tickets
+```
+
+```js JavaScript (fetch)
+const response = await fetch("http://localhost:3000/tickets");
+const body = await response.json();
+
+console.log(body.data);    // array of tickets, or null
+console.log(body.message); // status message
+```
+
+</CodeGroup>

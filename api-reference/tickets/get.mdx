@@ -1,0 +1,74 @@
+---
+title: "Get a Single Ticket – Cinema Backend API"
+sidebarTitle: "Get Ticket"
+description: "Fetch one ticket by its UUID. Returns the full ticket object on success, or a 404 error when the ID does not match any stored ticket."
+---
+
+The **Get Ticket** endpoint looks up a single ticket by its `id` and returns the full ticket object when a match is found. If no ticket with the given UUID exists in the store, the server responds with HTTP `404` and `data` set to `null`. This is useful for confirming ticket details before processing a reservation or displaying a seat confirmation screen.
+
+## Endpoint
+
+```
+GET /tickets/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the ticket to retrieve (e.g.
+  `a1b2c3d4-e5f6-7890-abcd-ef1234567890`). UUIDs are assigned by the server at
+  creation time.
+</ParamField>
+
+## Responses
+
+| Status | Condition                              |
+| ------ | -------------------------------------- |
+| `200`  | Ticket found — full object returned    |
+| `404`  | No ticket matched the provided UUID    |
+
+### 200 — Ticket found
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "asiento": "A1",
+    "precio": 10.00
+  },
+  "message": "Ticket encontrado exitosamente"
+}
+```
+
+### 404 — Ticket not found
+
+```json
+{
+  "data": null,
+  "message": "Ticket no encontrado"
+}
+```
+
+## Example
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url http://localhost:3000/tickets/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+```
+
+```js JavaScript (fetch)
+const id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+const response = await fetch(`http://localhost:3000/tickets/${id}`);
+const body = await response.json();
+
+if (response.status === 404) {
+  console.error("Ticket not found:", body.message);
+} else {
+  console.log("Ticket:", body.data);
+}
+```
+
+</CodeGroup>

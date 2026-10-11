@@ -1,0 +1,107 @@
+---
+title: "Update a Show Function by ID — Cinema Backend API"
+sidebarTitle: "Update Function"
+description: "Partially update an existing show function's movie, room, or scheduled time by UUID. Returns the updated function object or a 400 error if not found."
+---
+
+The **Update Function** endpoint allows you to modify one or more fields of an existing show function. Pass the function's UUID as a path parameter and include any combination of `peliculaId`, `salaId`, or `horario` in the request body — all fields are optional. Fields that are omitted retain their existing values. On success, the API responds with HTTP `201` and the updated function object. If no function matches the provided UUID, HTTP `400` is returned.
+
+<Note>
+  Functions link movies to rooms. Without a valid movie (`peliculaId`) and room (`salaId`) previously created in their respective resources, a function may reference orphan IDs. The API does not validate the existence of `peliculaId` or `salaId` during an update — supplying a non-existent UUID for either field will be accepted silently. Always confirm the target movie and room exist before updating.
+</Note>
+
+## Endpoint
+
+```
+PUT /funciones/update/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the show function to update.
+</ParamField>
+
+## Request Body
+
+All body fields are optional. At least one should be provided for a meaningful update; omitted fields are left unchanged.
+
+<ParamField body="peliculaId" type="string">
+  New UUID of the movie to link to this function. Omit to keep the current value.
+</ParamField>
+
+<ParamField body="salaId" type="string">
+  New UUID of the room for this function. Omit to keep the current value.
+</ParamField>
+
+<ParamField body="horario" type="string">
+  New scheduled datetime in ISO 8601 format (e.g. `"2025-07-22T21:00:00"`). Omit to keep the current value.
+</ParamField>
+
+## Response Body
+
+| Field     | Type            | Description                                              |
+| --------- | --------------- | -------------------------------------------------------- |
+| `data`    | `object \| null`| The updated function object, or `null` if not found.     |
+| `message` | `string`        | Human-readable status message.                           |
+
+### Function Object (on success)
+
+| Field        | Type     | Description                                          |
+| ------------ | -------- | ---------------------------------------------------- |
+| `id`         | `string` | UUID of the function (unchanged).                    |
+| `peliculaId` | `string` | UUID of the movie linked to this function.           |
+| `salaId`     | `string` | UUID of the room where the screening takes place.    |
+| `horario`    | `string` | ISO 8601 datetime string for the scheduled showing.  |
+
+## Example Request — Update Horario Only
+
+```bash
+curl -X PUT http://localhost:3000/funciones/update/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "horario": "2025-07-22T21:00:00"
+  }'
+```
+
+## Example Request — Update All Fields
+
+```bash
+curl -X PUT http://localhost:3000/funciones/update/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "peliculaId": "c9d8e7f6-a5b4-3c2d-1e0f-9a8b7c6d5e4f",
+    "salaId": "660f9511-f3ac-52e5-b827-557766551111",
+    "horario": "2025-07-22T21:00:00"
+  }'
+```
+
+## Example Response — Updated
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "peliculaId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "salaId": "550e8400-e29b-41d4-a716-446655440000",
+    "horario": "2025-07-22T21:00:00"
+  },
+  "message": "Función actualizada exitosamente"
+}
+```
+
+## Example Response — Not Found
+
+```json
+{
+  "data": null,
+  "message": "Función no encontrada"
+}
+```
+
+## Response Codes
+
+| Status | Meaning                                                       |
+| ------ | ------------------------------------------------------------- |
+| `201`  | Function updated. `data` contains the updated function object.|
+| `400`  | No function exists with the provided UUID.                    |

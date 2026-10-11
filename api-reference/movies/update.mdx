@@ -1,0 +1,104 @@
+---
+title: "Update a Movie by ID — Cinema Backend API"
+sidebarTitle: "Update Movie"
+description: "Partially or fully update an existing movie in the Cinema Backend API by UUID. Only the fields provided in the request body are changed; omitted fields retain their current values."
+---
+
+The **Update Movie** endpoint performs a partial update on an existing movie record. Supply the movie's UUID in the path and include only the fields you wish to change in the JSON request body — any field omitted from the body is left unchanged. If no movie with the given `id` exists in the store, the server responds with `400 Bad Request`.
+
+<Note>
+  This endpoint supports **partial updates**. You may send just `titulo`, just `duracion`, or any combination of the three fields. Only explicitly provided (truthy) values overwrite the stored data.
+</Note>
+
+## Endpoint
+
+```
+PUT /peliculas/update/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the movie to update (e.g. `550e8400-e29b-41d4-a716-446655440000`).
+</ParamField>
+
+## Body Parameters
+
+<ParamField body="titulo" type="string">
+  The new title for the movie. Omit to keep the current value.
+</ParamField>
+
+<ParamField body="genero" type="string">
+  The new genre for the movie. Omit to keep the current value.
+</ParamField>
+
+<ParamField body="duracion" type="number">
+  The new runtime in **minutes**. Omit to keep the current value.
+</ParamField>
+
+## Response Fields
+
+<ResponseField name="data" type="object | null">
+  The full updated movie object on success, or `null` when the movie was not found.
+
+  <Expandable title="Movie object">
+    <ResponseField name="id" type="string (uuid)">
+      The unique identifier of the movie (unchanged).
+    </ResponseField>
+    <ResponseField name="titulo" type="string">
+      The current title after the update.
+    </ResponseField>
+    <ResponseField name="genero" type="string">
+      The current genre after the update.
+    </ResponseField>
+    <ResponseField name="duracion" type="number">
+      The current runtime in minutes after the update.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable description of the operation result.
+  - `"Película actualizada exitosamente"` — update applied successfully.
+  - `"Película no encontrada"` — no movie matches the given ID.
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X PUT http://localhost:3000/peliculas/update/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "titulo": "Inception (Director'\''s Cut)",
+    "duracion": 155
+  }'
+```
+
+## Example Responses
+
+**200 — Movie updated**
+
+```json
+{
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "titulo": "Inception (Director's Cut)",
+    "genero": "Ciencia Ficción",
+    "duracion": 155
+  },
+  "message": "Película actualizada exitosamente"
+}
+```
+
+**400 — Movie not found**
+
+```json
+{
+  "data": null,
+  "message": "Película no encontrada"
+}
+```
+
+<Warning>
+  The update endpoint returns **`400`** (not `404`) when the ID does not match any stored movie. This is consistent with the rest of the mutation endpoints in this API. Plan your client-side error handling accordingly.
+</Warning>

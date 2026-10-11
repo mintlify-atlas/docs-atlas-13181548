@@ -1,47 +1,127 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Quickstart: Clone, Install, and Run the Cinema Backend API"
+sidebarTitle: "Quickstart"
+description: "Get the Cinema Backend API running on your machine in minutes — clone, install, start, and send your first request to create a movie record."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This guide walks you through everything you need to go from zero to a running Cinema Backend API server and your first successful API call. The whole process takes less than five minutes if you already have Node.js installed.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+<Step title="Prerequisites">
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+Make sure the following tools are available on your machine before you begin:
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
+- **Node.js 18 or later** — check with `node --version`
+- **npm** (bundled with Node.js) or **yarn**
+
+No database, Docker image, or external service is required. All data is stored in memory.
+
+</Step>
+
+<Step title="Clone the Repository">
+
+Clone the project from GitHub and change into the new directory:
+
+```bash
+git clone https://github.com/Juanfc1103/backend2026c-1.1.git && cd backend2026c-1.1
+```
+
+</Step>
+
+<Step title="Install Dependencies">
+
+Install all Node.js dependencies declared in `package.json`:
+
+<CodeGroup>
+
+```bash npm
+npm install
+```
+
+```bash yarn
+yarn install
+```
+
+</CodeGroup>
+
+This pulls in Express 4, Morgan, uuid, EJS, cookie-parser, and the other packages listed in `package.json`.
+
+</Step>
+
+<Step title="Start the Server">
+
+Choose the mode that fits your workflow:
+
+<CodeGroup>
+
+```bash Production
+npm start
+```
+
+```bash Development (hot-reload)
+npm run dev
+```
+
+</CodeGroup>
+
+<Note>
+`npm run dev` uses **nodemon** to watch for file changes and automatically restart the server — useful while you are actively developing or experimenting. `npm start` runs the server once with plain `node`.
+</Note>
+
+When the server is ready you will see Morgan's request logger activate. No explicit "listening" message is printed to stdout by default, but the process will stay alive and accept connections on **http://localhost:3000**.
+
+```
+> node ./bin/www
+```
+
+The server binds to `PORT` from the environment, defaulting to **3000**. To use a different port:
+
+```bash
+PORT=8080 npm start
+```
+
+</Step>
+
+<Step title="Make Your First Request">
+
+With the server running, open a new terminal and create your first movie record:
+
+```bash
+curl -X POST http://localhost:3000/peliculas/create \
+  -H "Content-Type: application/json" \
+  -d '{"titulo": "Inception", "genero": "Sci-Fi", "duracion": 148}'
+```
+
+A successful response looks like this (the `id` value will differ each run — it is a UUID v4 generated server-side):
+
+```json
+{
+  "data": {
+    "titulo": "Inception",
+    "genero": "Sci-Fi",
+    "duracion": 148,
+    "id": "a3f1c2d4-58e0-4b7a-9f6d-1234567890ab"
+  },
+  "message": "Película agregada exitosamente"
+}
+```
+
+Every response from the Cinema Backend API follows this `{ data, message }` envelope regardless of the resource or operation.
+
+</Step>
+
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Next Steps
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+Now that the server is up and you have made your first request, explore the rest of the documentation:
+
+<CardGroup cols={2}>
+  <Card title="Data Model" icon="database" href="/concepts/data-model">
+    Learn the fields, types, and relationships for all five resources.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    Browse every endpoint with full request and response examples.
+  </Card>
+</CardGroup>

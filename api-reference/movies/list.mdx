@@ -1,0 +1,90 @@
+---
+title: "List All Movies — Cinema Backend API"
+sidebarTitle: "List Movies"
+description: "Retrieve the complete list of movies stored in the Cinema Backend API. Returns an array of movie objects, or null when the store is empty."
+---
+
+The **List Movies** endpoint returns every movie currently held in the in-memory store. The response always follows the standard envelope shape — a `data` field that contains either an array of movie objects or `null` when no movies have been added yet, and a human-readable `message` string.
+
+<Note>
+  This API uses an **in-memory data store**. All movies are lost when the server restarts. There is no persistent database behind this endpoint.
+</Note>
+
+## Endpoint
+
+```
+GET /peliculas
+```
+
+## Response Fields
+
+<ResponseField name="data" type="array | null">
+  An array of movie objects when at least one movie exists, or `null` when the store is empty.
+
+  <Expandable title="Movie object">
+    <ResponseField name="id" type="string (uuid)">
+      Universally unique identifier assigned by the server when the movie was created.
+    </ResponseField>
+    <ResponseField name="titulo" type="string">
+      The title of the movie.
+    </ResponseField>
+    <ResponseField name="genero" type="string">
+      The genre of the movie (e.g. `"Acción"`, `"Drama"`, `"Comedia"`).
+    </ResponseField>
+    <ResponseField name="duracion" type="number">
+      Runtime of the movie in **minutes**.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable description of the operation result.
+  - `"Películas listadas exitosamente"` — one or more movies returned.
+  - `"No hay películas registradas"` — store is empty, `data` is `null`.
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET http://localhost:3000/peliculas \
+  -H "Accept: application/json"
+```
+
+## Example Responses
+
+**200 — Movies found**
+
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "titulo": "Inception",
+      "genero": "Ciencia Ficción",
+      "duracion": 148
+    },
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "titulo": "El Padrino",
+      "genero": "Drama",
+      "duracion": 175
+    },
+    {
+      "id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+      "titulo": "Interstellar",
+      "genero": "Ciencia Ficción",
+      "duracion": 169
+    }
+  ],
+  "message": "Películas listadas exitosamente"
+}
+```
+
+**200 — Store is empty**
+
+```json
+{
+  "data": null,
+  "message": "No hay películas registradas"
+}
+```

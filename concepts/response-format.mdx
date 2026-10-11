@@ -1,0 +1,131 @@
+---
+title: "Cinema Backend API Response Format and Status Codes"
+sidebarTitle: "Response Format"
+description: "Every Cinema Backend API response uses a { data, message } JSON envelope. Learn the status codes, success shapes, and error shapes you will encounter."
+---
+
+Every endpoint in the Cinema Backend API — regardless of resource, HTTP method, or outcome — returns the same JSON structure. Understanding this envelope up front means you can write a single response handler that works across movies, rooms, functions, tickets, and reservations alike.
+
+## The Response Envelope
+
+All responses are JSON objects with exactly two top-level keys:
+
+```json
+{
+  "data": <payload or null>,
+  "message": "<human-readable string>"
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `data` | object \| array \| `null` | The primary payload: a single resource object, an array of resources, or `null` when there is nothing to return. |
+| `message` | string | A human-readable Spanish-language description of the outcome. **Do not use this field for programmatic branching** — use the HTTP status code instead. |
+
+<Tip>
+Always check the **HTTP status code** to determine whether a request succeeded or failed. The `message` field is intended for display and logging purposes only; its exact wording may change between versions.
+</Tip>
+
+## HTTP Status Codes
+
+The API uses four HTTP status codes:
+
+| Code | Name | When it is used |
+|---|---|---|
+| `200 OK` | Success | Successful reads (`GET`) and successful deletes (`DELETE`). The `data` field contains the requested resource(s) or the updated list after deletion. |
+| `201 Created` | Created / Updated | Successful creates (`POST /create`) and successful updates (`PUT /update/:id`). Note that **update endpoints also return 201**, not 200. |
+| `400 Bad Request` | Validation / Not Found on Mutation | A required field is missing in the request body, **or** the resource being mutated (updated or deleted) does not exist. |
+| `404 Not Found` | Not Found on Read | The requested resource does not exist when fetching by ID (`GET /:id`). |
+
+<Note>
+The distinction between `400` and `404` for "not found" depends on the operation. Read endpoints (`GET /:id`) return `404`; mutation endpoints (`PUT`, `DELETE`) return `400` when the target record cannot be found.
+</Note>
+
+## Example Responses
+
+### Successful create — `201 Created`
+
+Returned by `POST /peliculas/create` when all required fields are present:
+
+```json
+{
+  "data": {
+    "titulo": "Inception",
+    "genero": "Sci-Fi",
+    "duracion": 148,
+    "id": "a3f1c2d4-58e0-4b7a-9f6d-1234567890ab"
+  },
+  "message": "Película agregada exitosamente"
+}
+```
+
+### Successful list — `200 OK`
+
+Returned by `GET /peliculas` when at least one movie exists:
+
+```json
+{
+  "data": [
+    {
+      "titulo": "Inception",
+      "genero": "Sci-Fi",
+      "duracion": 148,
+      "id": "a3f1c2d4-58e0-4b7a-9f6d-1234567890ab"
+    }
+  ],
+  "message": "Películas listadas exitosamente"
+}
+```
+
+### Empty list — `200 OK`
+
+Returned by any `GET /` list endpoint when no records have been created yet:
+
+```json
+{
+  "data": null,
+  "message": "No hay películas registradas"
+}
+```
+
+### Validation error — `400 Bad Request`
+
+Returned when a required field is missing from the request body:
+
+```json
+{
+  "data": null,
+  "message": "Faltan datos indispensables de la película"
+}
+```
+
+### Not found on read — `404 Not Found`
+
+Returned by `GET /peliculas/:id` when the given UUID does not match any movie:
+
+```json
+{
+  "data": null,
+  "message": "Película no encontrada"
+}
+```
+
+### Not found on mutation — `400 Bad Request`
+
+Returned by `PUT /peliculas/update/:id` or `DELETE /peliculas/delete/:id` when the given UUID does not match any movie:
+
+```json
+{
+  "data": null,
+  "message": "Película no encontrada"
+}
+```
+
+## The `data` Field and `null`
+
+The `data` field is `null` in two distinct situations:
+
+1. **An error occurred** — a required field was missing, or the resource was not found. In this case `data` is always `null`.
+2. **An empty collection** — a list endpoint is called but no records have been created yet. Rather than returning an empty array `[]`, the API returns `null` with an informational message.
+
+When `data` is non-null, it is either a **single object** (for single-resource reads and all write operations) or an **array of objects** (for list reads and delete operations, which return the updated collection).

@@ -1,0 +1,88 @@
+---
+title: "Delete a Ticket – Cinema Backend API"
+sidebarTitle: "Delete Ticket"
+description: "Permanently remove a ticket by UUID. Returns the remaining tickets array on success, or a 400 error when the ticket ID is not found in the store."
+---
+
+The **Delete Ticket** endpoint permanently removes a ticket from the in-memory store. The ticket to delete is identified by its UUID in the URL path. On success the server responds with HTTP `200` and the `data` field contains the **remaining** tickets array after the deletion — not the deleted record itself. If no ticket matches the provided UUID the server responds with HTTP `400` and `data` is `null`.
+
+<Warning>
+  There is **no cascade delete** in this API. If any reservation holds a
+  `ticketId` referencing the ticket you are about to delete, that field will
+  become a **dangling reference** — the reservation will still exist but its
+  `ticketId` will point to a ticket that no longer exists. Always remove or
+  reassign any dependent reservations before deleting a ticket.
+</Warning>
+
+## Endpoint
+
+```
+DELETE /tickets/delete/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the ticket to delete (e.g.
+  `c3d4e5f6-a7b8-9012-cdef-012345678902`).
+</ParamField>
+
+## Responses
+
+| Status | Condition                              |
+| ------ | -------------------------------------- |
+| `200`  | Ticket deleted — remaining array returned |
+| `400`  | No ticket found for the given UUID     |
+
+### 200 — Ticket deleted
+
+The `data` array contains all tickets that remain after the deletion. It will be an empty array (`[]`) if the deleted ticket was the last one in the store.
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+      "asiento": "A1",
+      "precio": 10.00
+    }
+  ],
+  "message": "Ticket eliminado exitosamente"
+}
+```
+
+### 400 — Ticket not found
+
+```json
+{
+  "data": null,
+  "message": "Ticket no encontrado"
+}
+```
+
+## Example
+
+<CodeGroup>
+
+```bash cURL
+curl --request DELETE \
+  --url http://localhost:3000/tickets/delete/c3d4e5f6-a7b8-9012-cdef-012345678902
+```
+
+```js JavaScript (fetch)
+const id = "c3d4e5f6-a7b8-9012-cdef-012345678902";
+const response = await fetch(`http://localhost:3000/tickets/delete/${id}`, {
+  method: "DELETE",
+});
+
+const body = await response.json();
+
+if (response.status === 400) {
+  console.error("Delete failed:", body.message);
+} else {
+  console.log("Remaining tickets:", body.data);
+}
+```
+
+</CodeGroup>

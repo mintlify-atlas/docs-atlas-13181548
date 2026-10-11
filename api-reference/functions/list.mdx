@@ -1,0 +1,76 @@
+---
+title: "List All Show Functions — Cinema Backend API"
+sidebarTitle: "List Functions"
+description: "Retrieve the complete list of scheduled show functions. Returns a data array with every function object, or null when none are registered."
+---
+
+The **List Functions** endpoint returns every scheduled show function currently stored in the Cinema Backend. A function (función) represents a single scheduled screening that links a movie to a room at a specific date and time. This endpoint is read-only, requires no request body, and always returns HTTP `200` — even when no functions have been created yet.
+
+<Note>
+  Functions link movies to rooms. Without a valid movie (`peliculaId`) and room (`salaId`) previously created in their respective resources, a function may reference orphan IDs. Always verify that the referenced movie and room exist before treating a function as fully valid.
+</Note>
+
+## Endpoint
+
+```
+GET /funciones
+```
+
+## Response Body
+
+| Field     | Type            | Description                                                  |
+| --------- | --------------- | ------------------------------------------------------------ |
+| `data`    | `array \| null` | Array of function objects, or `null` if none are registered. |
+| `message` | `string`        | Human-readable status message.                               |
+
+### Function Object
+
+| Field        | Type     | Description                                        |
+| ------------ | -------- | -------------------------------------------------- |
+| `id`         | `string` | UUID automatically assigned by the server.         |
+| `peliculaId` | `string` | UUID of the movie linked to this function.         |
+| `salaId`     | `string` | UUID of the room where the screening takes place.  |
+| `horario`    | `string` | ISO 8601 datetime string for the scheduled showing.|
+
+## Example Request
+
+```bash
+curl -X GET http://localhost:3000/funciones
+```
+
+## Example Response — Functions Found
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "peliculaId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "salaId": "550e8400-e29b-41d4-a716-446655440000",
+      "horario": "2025-07-20T20:00:00"
+    },
+    {
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "peliculaId": "c9d8e7f6-a5b4-3c2d-1e0f-9a8b7c6d5e4f",
+      "salaId": "660f9511-f3ac-52e5-b827-557766551111",
+      "horario": "2025-07-21T18:30:00"
+    }
+  ],
+  "message": "Funciones listadas exitosamente"
+}
+```
+
+## Example Response — No Functions Registered
+
+```json
+{
+  "data": null,
+  "message": "No hay funciones registradas"
+}
+```
+
+## Response Codes
+
+| Status | Meaning                                                           |
+| ------ | ----------------------------------------------------------------- |
+| `200`  | Request succeeded. `data` contains the array or `null` if empty. |

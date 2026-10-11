@@ -1,0 +1,75 @@
+---
+title: "Get a Show Function by ID — Cinema Backend API"
+sidebarTitle: "Get Function"
+description: "Fetch a single scheduled show function by its UUID. Returns the function object on success or a 404 error when the ID does not exist."
+---
+
+The **Get Function** endpoint retrieves a single scheduled show function by its unique identifier. Supply the function's UUID as a path parameter and the API returns the complete function object, including the linked movie ID, room ID, and scheduled datetime. If no function matches the given ID, the API responds with HTTP `404` and a `null` data payload.
+
+<Note>
+  Functions link movies to rooms. Without a valid movie (`peliculaId`) and room (`salaId`) previously created in their respective resources, a function may reference orphan IDs. Always verify that the referenced movie and room exist before treating a function as fully valid.
+</Note>
+
+## Endpoint
+
+```
+GET /funciones/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the show function to retrieve.
+</ParamField>
+
+## Response Body
+
+| Field     | Type            | Description                                           |
+| --------- | --------------- | ----------------------------------------------------- |
+| `data`    | `object \| null`| The function object on success, or `null` on failure. |
+| `message` | `string`        | Human-readable status message.                        |
+
+### Function Object
+
+| Field        | Type     | Description                                        |
+| ------------ | -------- | -------------------------------------------------- |
+| `id`         | `string` | UUID automatically assigned by the server.         |
+| `peliculaId` | `string` | UUID of the movie linked to this function.         |
+| `salaId`     | `string` | UUID of the room where the screening takes place.  |
+| `horario`    | `string` | ISO 8601 datetime string for the scheduled showing.|
+
+## Example Request
+
+```bash
+curl -X GET http://localhost:3000/funciones/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+```
+
+## Example Response — Found
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "peliculaId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "salaId": "550e8400-e29b-41d4-a716-446655440000",
+    "horario": "2025-07-20T20:00:00"
+  },
+  "message": "Función encontrada exitosamente"
+}
+```
+
+## Example Response — Not Found
+
+```json
+{
+  "data": null,
+  "message": "Función no encontrada"
+}
+```
+
+## Response Codes
+
+| Status | Meaning                                              |
+| ------ | ---------------------------------------------------- |
+| `200`  | Function found. `data` contains the function object. |
+| `404`  | No function exists with the provided UUID.           |

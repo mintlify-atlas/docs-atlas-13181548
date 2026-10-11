@@ -1,0 +1,90 @@
+---
+title: "Delete a Show Function by ID — Cinema Backend API"
+sidebarTitle: "Delete Function"
+description: "Permanently remove a scheduled show function by its UUID. Returns the remaining functions array on success or a 400 error if the ID is not found."
+---
+
+The **Delete Function** endpoint permanently removes a scheduled show function from the Cinema Backend. Provide the function's UUID as a path parameter — if found, the function is deleted and the API returns HTTP `200` with the updated list of all remaining functions in the `data` field. If no function matches the given UUID, the API responds with HTTP `400` and a `null` data payload. This operation is irreversible.
+
+<Note>
+  Functions link movies to rooms. Without a valid movie (`peliculaId`) and room (`salaId`) previously created in their respective resources, a function may reference orphan IDs. Deleting a function only removes the scheduling record itself — it does not affect the referenced movie or room in any way.
+</Note>
+
+## Endpoint
+
+```
+DELETE /funciones/delete/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the show function to permanently delete.
+</ParamField>
+
+## Response Body
+
+| Field     | Type            | Description                                                              |
+| --------- | --------------- | ------------------------------------------------------------------------ |
+| `data`    | `array \| null` | The updated array of remaining functions after deletion, or `null` if the function was not found. |
+| `message` | `string`        | Human-readable status message.                                           |
+
+### Function Object (within returned array)
+
+| Field        | Type     | Description                                        |
+| ------------ | -------- | -------------------------------------------------- |
+| `id`         | `string` | UUID of the function.                              |
+| `peliculaId` | `string` | UUID of the movie linked to this function.         |
+| `salaId`     | `string` | UUID of the room where the screening takes place.  |
+| `horario`    | `string` | ISO 8601 datetime string for the scheduled showing.|
+
+## Example Request
+
+```bash
+curl -X DELETE http://localhost:3000/funciones/delete/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+```
+
+## Example Response — Deleted
+
+The deleted function is removed from storage. `data` contains every function that remains after the deletion.
+
+```json
+{
+  "data": [
+    {
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "peliculaId": "c9d8e7f6-a5b4-3c2d-1e0f-9a8b7c6d5e4f",
+      "salaId": "660f9511-f3ac-52e5-b827-557766551111",
+      "horario": "2025-07-21T18:30:00"
+    }
+  ],
+  "message": "Función eliminada exitosamente"
+}
+```
+
+## Example Response — Last Function Deleted
+
+When the deleted function was the only one stored, `data` is an empty array.
+
+```json
+{
+  "data": [],
+  "message": "Función eliminada exitosamente"
+}
+```
+
+## Example Response — Not Found
+
+```json
+{
+  "data": null,
+  "message": "Función no encontrada"
+}
+```
+
+## Response Codes
+
+| Status | Meaning                                                                              |
+| ------ | ------------------------------------------------------------------------------------ |
+| `200`  | Function deleted. `data` contains the remaining functions array (may be empty).      |
+| `400`  | No function exists with the provided UUID. Nothing was deleted.                      |

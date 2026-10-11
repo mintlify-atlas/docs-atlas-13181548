@@ -1,0 +1,106 @@
+---
+title: "Get Latest 5 Movies — Cinema Backend API"
+sidebarTitle: "Latest 5"
+description: "Retrieve the five most recently added movies from the Cinema Backend API. Uses array slice logic to return the tail of the in-memory store."
+---
+
+The **Latest 5** endpoint returns the five most recently added movies from the in-memory store. Internally the controller calls `peliculas.slice(-5)`, so the result always reflects the last five entries in insertion order. If fewer than five movies exist, all of them are returned. If the store is empty, `data` is `null`.
+
+<Note>
+  Because this API stores data **in memory**, "latest" refers to insertion order within the current server session — not a persisted timestamp. Restarting the server resets the store entirely.
+</Note>
+
+## Endpoint
+
+```
+GET /peliculas/grupo/ultimas5
+```
+
+## Response Fields
+
+<ResponseField name="data" type="array | null">
+  An array of up to five movie objects (the most recently added), or `null` when the store is empty.
+
+  <Expandable title="Movie object">
+    <ResponseField name="id" type="string (uuid)">
+      The unique identifier of the movie.
+    </ResponseField>
+    <ResponseField name="titulo" type="string">
+      The title of the movie.
+    </ResponseField>
+    <ResponseField name="genero" type="string">
+      The genre of the movie.
+    </ResponseField>
+    <ResponseField name="duracion" type="number">
+      Runtime of the movie in **minutes**.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable description of the operation result.
+  - `"Últimas 5 películas obtenidas exitosamente"` — slice returned successfully.
+  - `"No hay películas registradas"` — store is empty, `data` is `null`.
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET http://localhost:3000/peliculas/grupo/ultimas5 \
+  -H "Accept: application/json"
+```
+
+## Example Responses
+
+**200 — Latest movies returned**
+
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "titulo": "Inception",
+      "genero": "Ciencia Ficción",
+      "duracion": 148
+    },
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "titulo": "El Padrino",
+      "genero": "Drama",
+      "duracion": 175
+    },
+    {
+      "id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+      "titulo": "Interstellar",
+      "genero": "Ciencia Ficción",
+      "duracion": 169
+    },
+    {
+      "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+      "titulo": "Parasite",
+      "genero": "Thriller",
+      "duracion": 132
+    },
+    {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "titulo": "Coco",
+      "genero": "Animación",
+      "duracion": 105
+    }
+  ],
+  "message": "Últimas 5 películas obtenidas exitosamente"
+}
+```
+
+**200 — Store is empty**
+
+```json
+{
+  "data": null,
+  "message": "No hay películas registradas"
+}
+```
+
+<Note>
+  If the store contains **fewer than 5 movies**, the endpoint returns all of them. `Array.prototype.slice(-5)` safely handles arrays shorter than the requested count.
+</Note>

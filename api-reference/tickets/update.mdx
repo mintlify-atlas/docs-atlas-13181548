@@ -1,0 +1,105 @@
+---
+title: "Update an Existing Ticket – Cinema Backend API"
+sidebarTitle: "Update Ticket"
+description: "Partially update a ticket's funcionId, seat, or price by ID. Only supplied fields are overwritten; omitted fields retain their current values."
+---
+
+The **Update Ticket** endpoint performs a partial update on an existing ticket. You only need to include the fields you want to change — any field omitted from the request body is left unchanged on the stored record. The ticket is identified by its UUID in the URL path. If no ticket matches the given ID the server responds with HTTP `400` and `data` set to `null`. On success the full updated ticket object is returned with HTTP `201`.
+
+## Endpoint
+
+```
+PUT /tickets/update/:id
+```
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the ticket to update (e.g.
+  `c3d4e5f6-a7b8-9012-cdef-012345678902`).
+</ParamField>
+
+## Request Body
+
+All body fields are optional. Include only the fields you want to modify.
+
+<ParamField body="funcionId" type="string">
+  Replacement UUID for the associated show function. Provide this only when
+  reassigning the ticket to a different screening.
+</ParamField>
+
+<ParamField body="asiento" type="string">
+  New seat identifier (e.g. `"C5"`). Useful when a guest requests a seat
+  change before the show.
+</ParamField>
+
+<ParamField body="precio" type="number">
+  Updated ticket price. Must be a positive number when provided.
+</ParamField>
+
+## Responses
+
+| Status | Condition                            |
+| ------ | ------------------------------------ |
+| `201`  | Ticket updated — full object returned |
+| `400`  | No ticket found for the given UUID   |
+
+### 201 — Ticket updated
+
+```json
+{
+  "data": {
+    "id": "c3d4e5f6-a7b8-9012-cdef-012345678902",
+    "funcionId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "asiento": "C5",
+    "precio": 14.00
+  },
+  "message": "Ticket actualizado exitosamente"
+}
+```
+
+### 400 — Ticket not found
+
+```json
+{
+  "data": null,
+  "message": "Ticket no encontrado"
+}
+```
+
+## Example
+
+<CodeGroup>
+
+```bash cURL
+curl --request PUT \
+  --url http://localhost:3000/tickets/update/c3d4e5f6-a7b8-9012-cdef-012345678902 \
+  --header "Content-Type: application/json" \
+  --data '{
+    "asiento": "C5",
+    "precio": 14.00
+  }'
+```
+
+```js JavaScript (fetch)
+const id = "c3d4e5f6-a7b8-9012-cdef-012345678902";
+
+const response = await fetch(`http://localhost:3000/tickets/update/${id}`, {
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    asiento: "C5",
+    precio: 14.00,
+  }),
+});
+
+const body = await response.json();
+
+if (response.status === 400) {
+  console.error("Update failed:", body.message);
+} else {
+  console.log("Updated ticket:", body.data);
+}
+```
+
+</CodeGroup>

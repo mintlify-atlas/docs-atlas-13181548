@@ -1,0 +1,99 @@
+---
+title: "Create a New Movie — Cinema Backend API"
+sidebarTitle: "Create Movie"
+description: "Add a new movie to the Cinema Backend API in-memory store. Requires titulo, genero, and duracion. The server generates and assigns the UUID automatically."
+---
+
+The **Create Movie** endpoint adds a new movie to the in-memory store. You must provide all three required fields — `titulo`, `genero`, and `duracion` — in the JSON request body. The server generates a UUID v4 and attaches it as the `id` field before pushing the record into the store. Omitting any required field results in a `400 Bad Request` response.
+
+<Note>
+  The `id` field is **server-generated** using `uuid v4`. Do not include an `id` in your request body — it will be overwritten.
+</Note>
+
+## Endpoint
+
+```
+POST /peliculas/create
+```
+
+## Body Parameters
+
+<ParamField body="titulo" type="string" required>
+  The title of the movie. Must be a non-empty string.
+</ParamField>
+
+<ParamField body="genero" type="string" required>
+  The genre of the movie (e.g. `"Acción"`, `"Drama"`, `"Comedia"`, `"Ciencia Ficción"`). Must be a non-empty string.
+</ParamField>
+
+<ParamField body="duracion" type="number" required>
+  Runtime of the movie in **minutes**. Must be a positive number.
+</ParamField>
+
+## Response Fields
+
+<ResponseField name="data" type="object | null">
+  The newly created movie object (including the server-generated `id`) on success, or `null` on failure.
+
+  <Expandable title="Movie object">
+    <ResponseField name="id" type="string (uuid)">
+      Server-generated UUID v4 assigned at creation time.
+    </ResponseField>
+    <ResponseField name="titulo" type="string">
+      The title of the movie as provided in the request.
+    </ResponseField>
+    <ResponseField name="genero" type="string">
+      The genre of the movie as provided in the request.
+    </ResponseField>
+    <ResponseField name="duracion" type="number">
+      Runtime of the movie in minutes as provided in the request.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable description of the operation result.
+  - `"Película agregada exitosamente"` — movie was created successfully.
+  - `"Faltan datos indispensables de la película"` — one or more required fields are missing.
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X POST http://localhost:3000/peliculas/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "titulo": "Inception",
+    "genero": "Ciencia Ficción",
+    "duracion": 148
+  }'
+```
+
+## Example Responses
+
+**201 — Movie created**
+
+```json
+{
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "titulo": "Inception",
+    "genero": "Ciencia Ficción",
+    "duracion": 148
+  },
+  "message": "Película agregada exitosamente"
+}
+```
+
+**400 — Missing required fields**
+
+```json
+{
+  "data": null,
+  "message": "Faltan datos indispensables de la película"
+}
+```
+
+<Warning>
+  All three fields (`titulo`, `genero`, `duracion`) are **required**. Sending a request body that is missing any one of them — or sending no body at all — will always return `400`. The validation check uses a truthy test, so empty strings (`""`) and `0` will also trigger the error.
+</Warning>

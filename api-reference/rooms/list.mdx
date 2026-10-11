@@ -1,0 +1,74 @@
+---
+title: "List All Screening Rooms – Cinema Backend API"
+sidebarTitle: "List Rooms"
+description: "Retrieve every screening room stored in the Cinema Backend. Returns a room array, or null with a message when no rooms have been created yet."
+---
+
+The **List Rooms** endpoint returns every screening room currently registered in the system. When at least one room exists, `data` contains the full array of room objects. If the store is empty, the server still responds with HTTP `200` but sets `data` to `null` and includes an explanatory message — so your client should always check `data` before iterating.
+
+<Note>
+  Room data is held **in memory**. All rooms are lost whenever the server process restarts. This is expected behaviour for a development environment; swap the in-memory store for a persistent database before deploying to production.
+</Note>
+
+## Endpoint
+
+```
+GET /salas
+```
+
+## Request
+
+No path parameters, query parameters, or request body are required.
+
+## Response Schema
+
+| Field     | Type            | Description                                        |
+| --------- | --------------- | -------------------------------------------------- |
+| `data`    | `array \| null` | Array of room objects, or `null` when store is empty |
+| `message` | `string`        | Human-readable status description                  |
+
+### Room Object
+
+| Field       | Type     | Description                         |
+| ----------- | -------- | ----------------------------------- |
+| `id`        | `string` | UUID assigned by the server         |
+| `nombre`    | `string` | Display name of the screening room  |
+| `capacidad` | `number` | Maximum seat count for the room     |
+
+## Example
+
+### Request
+
+```bash
+curl --request GET \
+  --url http://localhost:3000/salas
+```
+
+### Response — rooms found `200`
+
+```json
+{
+  "data": [
+    {
+      "id": "a3bb189e-8bf9-3888-9912-ace4e6543002",
+      "nombre": "Sala Norte",
+      "capacidad": 120
+    },
+    {
+      "id": "b7cd290f-9cg0-4999-0023-bdf5f7654113",
+      "nombre": "Sala Sur",
+      "capacidad": 80
+    }
+  ],
+  "message": "Salas listadas exitosamente"
+}
+```
+
+### Response — no rooms exist `200`
+
+```json
+{
+  "data": null,
+  "message": "No hay salas registradas"
+}
+```

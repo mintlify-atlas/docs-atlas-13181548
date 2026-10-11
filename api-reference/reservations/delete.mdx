@@ -1,0 +1,72 @@
+---
+title: "Delete a Cinema Reservation by ID – Backend API Guide"
+sidebarTitle: "Delete Reservation"
+description: "Permanently remove a reservation from the store by its UUID. Returns the updated reservations array on success, or 400 when the ID is not found."
+---
+
+The **Delete Reservation** endpoint permanently removes a reservation from the in-memory store. The server locates the record by UUID using `Array.splice()`, removes it, and returns the remaining reservations array so you can confirm the deletion in a single round trip. If the UUID does not match any stored reservation the server responds with HTTP **400** and a `null` data payload.
+
+## Endpoint
+
+```
+DELETE /reservaciones/delete/:id
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  UUID of the reservation to delete (e.g. `a1b2c3d4-e5f6-7890-abcd-ef1234567890`).
+</ParamField>
+
+## Request
+
+### Example Request
+
+```bash
+curl -X DELETE http://localhost:3000/reservaciones/delete/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+```
+
+## Responses
+
+### 200 — Reservation Deleted
+
+The response `data` field contains the **remaining** reservations array after the deletion.
+
+```json
+{
+  "data": [
+    {
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "cliente": "Carlos Ramírez",
+      "ticketId": "e8d7c6b5-a493-2101-edcb-a98765432109",
+      "fecha": "2025-07-22"
+    }
+  ],
+  "message": "Reservación eliminada exitosamente"
+}
+```
+
+When the deleted reservation was the last one in the store, `data` will be an empty array:
+
+```json
+{
+  "data": [],
+  "message": "Reservación eliminada exitosamente"
+}
+```
+
+### 400 — Reservation Not Found
+
+```json
+{
+  "data": null,
+  "message": "Reservación no encontrada"
+}
+```
+
+## Response Fields
+
+| Field     | Type             | Description                                                         |
+|-----------|------------------|---------------------------------------------------------------------|
+| `data`    | `array \| null`  | Remaining reservations after deletion, or `null` if ID not found   |
+| `message` | `string`         | Human-readable status message                                       |

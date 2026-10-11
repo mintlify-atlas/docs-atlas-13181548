@@ -1,0 +1,68 @@
+---
+title: "Get a Single Reservation by UUID – Cinema Backend API"
+sidebarTitle: "Get Reservation"
+description: "Fetch one reservation by its UUID. Returns the full reservation object on success, or a 404 response when the ID does not match any record."
+---
+
+The **Get Reservation** endpoint looks up a single reservation using its unique identifier. Provide the reservation's UUID in the URL path and the server returns the matching object. If no reservation with that ID exists, the API responds with HTTP **404** and a `null` data payload.
+
+## Endpoint
+
+```
+GET /reservaciones/:id
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the reservation to retrieve (e.g. `a1b2c3d4-e5f6-7890-abcd-ef1234567890`).
+</ParamField>
+
+## Request
+
+### Example Request
+
+```bash
+curl http://localhost:3000/reservaciones/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+```
+
+## Responses
+
+### 200 — Reservation Found
+
+```json
+{
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "cliente": "María González",
+    "ticketId": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+    "fecha": "2025-07-20"
+  },
+  "message": "Reservación encontrada exitosamente"
+}
+```
+
+### 404 — Reservation Not Found
+
+```json
+{
+  "data": null,
+  "message": "Reservación no encontrada"
+}
+```
+
+## Response Fields
+
+| Field     | Type             | Description                                      |
+|-----------|------------------|--------------------------------------------------|
+| `data`    | `object \| null` | The reservation object, or `null` if not found   |
+| `message` | `string`         | Human-readable status message                    |
+
+### Reservation Object
+
+| Field      | Type     | Description                              |
+|------------|----------|------------------------------------------|
+| `id`       | `string` | UUID of the reservation                  |
+| `cliente`  | `string` | Customer name                            |
+| `ticketId` | `string` | UUID of the associated ticket            |
+| `fecha`    | `string` | Reservation date (e.g. `"2025-07-20"`)  |

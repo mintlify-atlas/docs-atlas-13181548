@@ -1,0 +1,129 @@
+{
+  "projectType": "api-service",
+  "projectName": "Cinema Backend API",
+  "projectDescription": "A RESTful Express.js backend API for managing cinema operations including movies, screening rooms, show schedules, tickets, and reservations.",
+  "theme": "luma",
+  "primaryColor": "#E63946",
+  "lightColor": "#FF6B6B",
+  "darkColor": "#C1121F",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Concepts",
+            "pages": ["concepts/data-model", "concepts/response-format"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["api-reference/overview"]
+          },
+          {
+            "group": "Movies",
+            "pages": [
+              "api-reference/movies/list",
+              "api-reference/movies/get",
+              "api-reference/movies/latest",
+              "api-reference/movies/create",
+              "api-reference/movies/update",
+              "api-reference/movies/delete"
+            ]
+          },
+          {
+            "group": "Screening Rooms",
+            "pages": [
+              "api-reference/rooms/list",
+              "api-reference/rooms/get",
+              "api-reference/rooms/create",
+              "api-reference/rooms/update",
+              "api-reference/rooms/delete"
+            ]
+          },
+          {
+            "group": "Show Functions",
+            "pages": [
+              "api-reference/functions/list",
+              "api-reference/functions/get",
+              "api-reference/functions/create",
+              "api-reference/functions/update",
+              "api-reference/functions/delete"
+            ]
+          },
+          {
+            "group": "Tickets",
+            "pages": [
+              "api-reference/tickets/list",
+              "api-reference/tickets/get",
+              "api-reference/tickets/create",
+              "api-reference/tickets/update",
+              "api-reference/tickets/delete"
+            ]
+          },
+          {
+            "group": "Reservations",
+            "pages": [
+              "api-reference/reservations/list",
+              "api-reference/reservations/get",
+              "api-reference/reservations/by-date-range",
+              "api-reference/reservations/create",
+              "api-reference/reservations/update",
+              "api-reference/reservations/delete",
+              "api-reference/reservations/unlink-ticket"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Full CRUD operations for movies (peliculas) with title, genre, and duration fields",
+    "Screening room (salas) management with name and capacity",
+    "Show function (funciones) scheduling linking movies to rooms with a time slot",
+    "Ticket (tickets) management with seat assignment and pricing linked to a function",
+    "Reservation (reservaciones) management linking customers to tickets with date tracking",
+    "Date-range filtering for reservations",
+    "Ticket-reservation relationship removal endpoint",
+    "In-memory data store with UUID-based IDs",
+    "Consistent JSON response envelope: { data, message } with HTTP status codes"
+  ],
+  "publicApiSurface": [
+    "GET /peliculas",
+    "GET /peliculas/grupo/ultimas5",
+    "GET /peliculas/:id",
+    "POST /peliculas/create",
+    "PUT /peliculas/update/:id",
+    "DELETE /peliculas/delete/:id",
+    "GET /salas",
+    "GET /salas/:id",
+    "POST /salas/create",
+    "PUT /salas/update/:id",
+    "DELETE /salas/delete/:id",
+    "GET /funciones",
+    "GET /funciones/:id",
+    "POST /funciones/create",
+    "PUT /funciones/update/:id",
+    "DELETE /funciones/delete/:id",
+    "GET /tickets",
+    "GET /tickets/:id",
+    "POST /tickets/create",
+    "PUT /tickets/update/:id",
+    "DELETE /tickets/delete/:id",
+    "GET /reservaciones",
+    "GET /reservaciones/:id",
+    "GET /reservaciones/busqueda/fecha?inicio=&fin=",
+    "POST /reservaciones/create",
+    "PUT /reservaciones/update/:id",
+    "DELETE /reservaciones/delete/:id",
+    "DELETE /reservaciones/delete-relation/:id/ticket"
+  ]
+}

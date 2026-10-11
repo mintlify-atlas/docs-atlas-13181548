@@ -1,0 +1,82 @@
+---
+title: "Update a Screening Room by ID – Cinema Backend API"
+sidebarTitle: "Update Room"
+description: "Modify the name or seating capacity of an existing room. Provide only the fields to change; omitted fields retain their current values."
+---
+
+The **Update Room** endpoint performs a partial update on an existing screening room. Pass the room's UUID as a path parameter and include only the fields you want to change in the JSON request body — `nombre`, `capacidad`, or both. Any field omitted from the body is left unchanged, so you never need to re-send data you are not modifying. If the ID matches a room in the store, the server responds with HTTP `201` and returns the full updated room object. If no room with that ID exists, the server returns `400` with `data` set to `null`.
+
+## Endpoint
+
+```
+PUT /salas/update/:id
+```
+
+## Path Parameters
+
+| Parameter | Type     | Required | Description                           |
+| --------- | -------- | -------- | ------------------------------------- |
+| `id`      | `string` | ✅ Yes   | UUID of the screening room to update  |
+
+## Request Body
+
+Send a JSON object containing one or both updatable fields:
+
+| Field       | Type     | Required | Description                                  |
+| ----------- | -------- | -------- | -------------------------------------------- |
+| `nombre`    | `string` | ❌ No   | New display name for the room                |
+| `capacidad` | `number` | ❌ No   | New maximum seat count for the room          |
+
+## Response Schema
+
+| Field     | Type            | Description                                    |
+| --------- | --------------- | ---------------------------------------------- |
+| `data`    | `object \| null` | Updated room object on success, `null` on error |
+| `message` | `string`        | Human-readable status description               |
+
+### Room Object (success)
+
+| Field       | Type     | Description                          |
+| ----------- | -------- | ------------------------------------ |
+| `id`        | `string` | UUID of the room (unchanged)         |
+| `nombre`    | `string` | Current display name after the update |
+| `capacidad` | `number` | Current seat count after the update  |
+
+## Examples
+
+### Request — update capacity only
+
+```bash
+curl --request PUT \
+  --url http://localhost:3000/salas/update/a3bb189e-8bf9-3888-9912-ace4e6543002 \
+  --header "Content-Type: application/json" \
+  --data '{
+    "capacidad": 150
+  }'
+```
+
+### Response — room updated `201`
+
+```json
+{
+  "data": {
+    "id": "a3bb189e-8bf9-3888-9912-ace4e6543002",
+    "nombre": "Sala Norte",
+    "capacidad": 150
+  },
+  "message": "Sala actualizada exitosamente"
+}
+```
+
+### Response — room not found `400`
+
+```json
+{
+  "data": null,
+  "message": "Sala no encontrada"
+}
+```
+
+<Note>
+  This endpoint intentionally returns **HTTP `201`** on a successful update — not the more conventional `200`. This matches the controller's behaviour and should be handled accordingly in your client code.
+</Note>
