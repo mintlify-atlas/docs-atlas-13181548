@@ -54,7 +54,7 @@ The Cinema Backend API is a lightweight Node.js application with no external run
 | Framework | Express 4 | Routing, JSON body parsing, `express.urlencoded` |
 | ID generation | uuid v4 | Every new record receives a `uuidv4()` identifier |
 | HTTP logging | Morgan (`dev` format) | Logs method, path, status, and response time to stdout |
-| View engine | EJS / Jade | Bundled for the default Express scaffold; not used by the JSON API routes |
+| View engine | EJS | Configured as the active view engine (`app.set("view engine", "ejs")`). Jade is also present as a dependency from the Express scaffold but is not used by the JSON API routes. |
 | Dev server | nodemon | `npm run dev` restarts the process on file changes |
 
 The server reads its port from the `PORT` environment variable, falling back to **3000** if the variable is not set.

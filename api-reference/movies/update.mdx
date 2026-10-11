@@ -1,7 +1,7 @@
 ---
-title: "Update a Movie by ID — Cinema Backend API"
+title: "Update an Existing Movie by UUID — Cinema Backend API"
 sidebarTitle: "Update Movie"
-description: "Partially or fully update an existing movie in the Cinema Backend API by UUID. Only the fields provided in the request body are changed; omitted fields retain their current values."
+description: "Partially update a movie in the Cinema Backend API by UUID. Only truthy body fields overwrite stored values; omitted fields are left unchanged."
 ---
 
 The **Update Movie** endpoint performs a partial update on an existing movie record. Supply the movie's UUID in the path and include only the fields you wish to change in the JSON request body — any field omitted from the body is left unchanged. If no movie with the given `id` exists in the store, the server responds with `400 Bad Request`.

@@ -1,5 +1,5 @@
 ---
-title: "List All Show Functions — Cinema Backend API"
+title: "List All Cinema Show Functions — Cinema Backend API"
 sidebarTitle: "List Functions"
 description: "Retrieve the complete list of scheduled show functions. Returns a data array with every function object, or null when none are registered."
 ---
@@ -7,12 +7,12 @@ description: "Retrieve the complete list of scheduled show functions. Returns a 
 The **List Functions** endpoint returns every scheduled show function currently stored in the Cinema Backend. A function (función) represents a single scheduled screening that links a movie to a room at a specific date and time. This endpoint is read-only, requires no request body, and always returns HTTP `200` — even when no functions have been created yet.
 
 <Note>
-  Functions link movies to rooms. Without a valid movie (`peliculaId`) and room (`salaId`) previously created in their respective resources, a function may reference orphan IDs. Always verify that the referenced movie and room exist before treating a function as fully valid.
+  Functions link movies to rooms via `peliculaId` and `salaId`. The API does **not** validate that these UUIDs correspond to existing records — it only checks that the fields are present when creating a function. Always ensure the referenced movie and room exist before treating a function as fully valid.
 </Note>
 
 ## Endpoint
 
-```
+```http
 GET /funciones
 ```
 

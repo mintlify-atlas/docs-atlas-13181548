@@ -1,5 +1,5 @@
 ---
-title: "Get a Show Function by ID — Cinema Backend API"
+title: "Retrieve a Show Function by ID — Cinema Backend API"
 sidebarTitle: "Get Function"
 description: "Fetch a single scheduled show function by its UUID. Returns the function object on success or a 404 error when the ID does not exist."
 ---
@@ -7,12 +7,12 @@ description: "Fetch a single scheduled show function by its UUID. Returns the fu
 The **Get Function** endpoint retrieves a single scheduled show function by its unique identifier. Supply the function's UUID as a path parameter and the API returns the complete function object, including the linked movie ID, room ID, and scheduled datetime. If no function matches the given ID, the API responds with HTTP `404` and a `null` data payload.
 
 <Note>
-  Functions link movies to rooms. Without a valid movie (`peliculaId`) and room (`salaId`) previously created in their respective resources, a function may reference orphan IDs. Always verify that the referenced movie and room exist before treating a function as fully valid.
+  Functions link movies to rooms via `peliculaId` and `salaId`. The API does **not** validate that these UUIDs correspond to existing records — it only checks that the fields are present when creating a function. Always ensure the referenced movie and room exist before treating a function as fully valid.
 </Note>
 
 ## Endpoint
 
-```
+```http
 GET /funciones/:id
 ```
 

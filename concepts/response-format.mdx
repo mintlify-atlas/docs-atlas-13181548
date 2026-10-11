@@ -32,13 +32,13 @@ The API uses four HTTP status codes:
 
 | Code | Name | When it is used |
 |---|---|---|
-| `200 OK` | Success | Successful reads (`GET`) and successful deletes (`DELETE`). The `data` field contains the requested resource(s) or the updated list after deletion. |
-| `201 Created` | Created / Updated | Successful creates (`POST /create`) and successful updates (`PUT /update/:id`). Note that **update endpoints also return 201**, not 200. |
+| `200 OK` | Success | Successful reads (`GET`), successful deletes (`DELETE`), and successful updates to the **movies** resource (`PUT /peliculas/update/:id`). The `data` field contains the requested resource(s), the updated record, or the remaining list after deletion. |
+| `201 Created` | Created / Updated | Successful creates (`POST /create`) for all resources, and successful updates (`PUT /update/:id`) for **rooms, functions, tickets, and reservations**. Note that these update endpoints return `201`, not `200`. |
 | `400 Bad Request` | Validation / Not Found on Mutation | A required field is missing in the request body, **or** the resource being mutated (updated or deleted) does not exist. |
 | `404 Not Found` | Not Found on Read | The requested resource does not exist when fetching by ID (`GET /:id`). |
 
 <Note>
-The distinction between `400` and `404` for "not found" depends on the operation. Read endpoints (`GET /:id`) return `404`; mutation endpoints (`PUT`, `DELETE`) return `400` when the target record cannot be found.
+Update status codes differ by resource: `PUT /peliculas/update/:id` returns `200 OK` on success, while `PUT /salas/update/:id`, `PUT /funciones/update/:id`, `PUT /tickets/update/:id`, and `PUT /reservaciones/update/:id` all return `201 Created`. The distinction between `400` and `404` for "not found" depends on the operation: read endpoints (`GET /:id`) return `404`; mutation endpoints (`PUT`, `DELETE`) return `400` when the target record cannot be found.
 </Note>
 
 ## Example Responses
@@ -56,6 +56,37 @@ Returned by `POST /peliculas/create` when all required fields are present:
     "id": "a3f1c2d4-58e0-4b7a-9f6d-1234567890ab"
   },
   "message": "Película agregada exitosamente"
+}
+```
+
+### Successful update (movies) — `200 OK`
+
+Returned by `PUT /peliculas/update/:id` when the movie is found and updated:
+
+```json
+{
+  "data": {
+    "titulo": "Inception",
+    "genero": "Thriller",
+    "duracion": 148,
+    "id": "a3f1c2d4-58e0-4b7a-9f6d-1234567890ab"
+  },
+  "message": "Película actualizada exitosamente"
+}
+```
+
+### Successful update (rooms, functions, tickets, reservations) — `201 Created`
+
+Returned by `PUT /salas/update/:id`, `PUT /funciones/update/:id`, `PUT /tickets/update/:id`, or `PUT /reservaciones/update/:id` when the record is found and updated:
+
+```json
+{
+  "data": {
+    "nombre": "IMAX",
+    "capacidad": 200,
+    "id": "b7e2d3f5-91a0-4c8b-ae7e-0987654321cd"
+  },
+  "message": "Sala actualizada exitosamente"
 }
 ```
 
